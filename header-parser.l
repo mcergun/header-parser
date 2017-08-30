@@ -1,19 +1,21 @@
 %{
 
 #include "header-parser.tab.h"
+#include <iostream>
 
 %}
 
 %option noyywrap
 
 %%
-
-[#a-zA-Z0-9]+	;
+[ \t\r\n]	;
+\/\/.*	;	// line comment
+\/\*(.|\r|\r\n|\n)*\*\/	;	// block comment
 \<	{ return LEFT_BRKT; }
 \>	{ return RIGHT_BRKT; }
 \"	{ return QUOTE; }
-\#include[\ \t]+	{ return INCL_KEYW; }
-\/\/.*	;	// line comment
-\/\*(.|\r|\r\n|\n)*\*\/	;	// block comment
+\#include	{ return INCL_KEYW; }
+[a-zA-Z0-9./\\:]+	{ yylval.sval = _strdup(yytext); return STR;}
+.	;
 
 %%

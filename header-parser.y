@@ -6,7 +6,6 @@
 
 int yylex();
 int yyparse();
-FILE * yyin;
 void yyerror(const char * s);
 
 %}
@@ -19,7 +18,7 @@ void yyerror(const char * s);
 }
 
 %token INCL_KEYW DEF_KEYW IFDEF_KEYW
-%token LEFT_BRKT RIGHT_BRKT QUOTE
+%token HASHTAG LEFT_BRKT RIGHT_BRKT QUOTE
 
 %token <ival> INT
 %token <fval> FLOAT
@@ -27,12 +26,28 @@ void yyerror(const char * s);
 
 %%
 
+include_dirs: include_dirs include_dir
+	| include_dir
+	;
+
 include_dir: INCL_KEYW include_addr_local
 	| INCL_KEYW include_addr_global
+	| INCL_KEYW include_addr_local useless_strings
+	| INCL_KEYW include_addr_global useless_strings
 	;
-include_addr_local: QUOTE STR QUOTE { std::cout << "include " << $2 << std::endl; }
+include_addr_local: QUOTE STR QUOTE { std::cout << "include_addr_local " << $2 << std::endl; }
 	;
-include_addr_global: LEFT_BRKT STR RIGHT_BRKT { std::cout << "include " << $2 << std::endl; }
+include_addr_global: LEFT_BRKT STR RIGHT_BRKT { std::cout << "include_addr_global " << $2 << std::endl; }
+	;
+useless_strings: useless_strings useless_string
+	| useless_string
+		{ std::cout << "useless_strings" << std::endl; }
+	;
+useless_string: STR
+	| QUOTE
+	| LEFT_BRKT
+	| RIGHT_BRKT
+	| LEFT_BRKT
 	;
 
 %%
@@ -40,5 +55,5 @@ include_addr_global: LEFT_BRKT STR RIGHT_BRKT { std::cout << "include " << $2 <<
 void yyerror(const char *s)
 {
 	std::cout << "parse error" << s;
-	exit(-1);
+	return;
 }
