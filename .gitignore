@@ -1,1 +1,4 @@
 Debug/
+*.flex.cpp
+*.tab.cpp
+*.tab.h
