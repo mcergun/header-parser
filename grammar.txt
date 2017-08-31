@@ -1,0 +1,28 @@
+grammar - wannabe - definitions 
+
+file
+lines
+
+lines
+line | lines line
+
+line
+include_directive | useless_string
+
+include_directive
+#include (WS) <string>
+#include (WS) "string"
+
+define_directive
+#define (WS) TAG (WS) VALUE
+
+if_directive
+#if (WS) CONDITION 
+	{\{} {WS} conditional directives {\}}
+#elif (WS) CONDITION1
+	{\{} {WS} conditional directives {\}}
+#elif (WS) CONDITION2
+	{\{} {WS} conditional directives {\}}
+...
+#else
+	{\{} {WS} conditional directives {\}}
