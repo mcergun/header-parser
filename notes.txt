@@ -1,0 +1,2 @@
+think about creating another way of dealing with comment, quotes and brackets.
+	maybe keep an integer denoting current mode (IN_QUOTES, IN_COMMENT, IN_BRACKETS, etc.) then discard or keep captured strings accordingly.
