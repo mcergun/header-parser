@@ -1,2 +1,4 @@
 think about creating another way of dealing with comment, quotes and brackets.
 	maybe keep an integer denoting current mode (IN_QUOTES, IN_COMMENT, IN_BRACKETS, etc.) then discard or keep captured strings accordingly.
+	flex/bison has STATEs for doing something similar. http://aquamentus.com/flex_bison.html tells about it in ADVANCED / start states section.
+	this style of approach worked for multiline comment. i should try it for quoted strings and bracket strings
