@@ -49,27 +49,27 @@ void debug_print_wstate(const char *state, const char *str)
 
 %option noyywrap
 
-%x BLK_COMMENT
-%x QUOTED_STR
-%x BRKTED_STR
+%x ST_BLK_COMMENT
+%x ST_QUOT_STR
+%x ST_BRKT_STR
 
 %%
 [ \t\r\n]								;
 \/\/.*									{ debug_print("LINE_COMMENT"); }	// line comment
 
-\/\*									{ debug_print("BLK_START"); BEGIN_STATE(BLK_COMMENT); }
-<BLK_COMMENT>\*\/						{ debug_print("BLK_END"); END_STATE(); std::cout << "BLK_COMMENT" << std::endl; }
-<BLK_COMMENT>[^\*\/]*					;
+\/\*									{ debug_print("BLK_START"); BEGIN_STATE(ST_BLK_COMMENT); }
+<ST_BLK_COMMENT>\*\/					{ debug_print("BLK_END"); END_STATE(); std::cout << "BLK_COMMENT" << std::endl; }
+<ST_BLK_COMMENT>[^\*\/]*				;
 
-\"										{ debug_print("QT_START"); BEGIN_STATE(QUOTED_STR); }
-<QUOTED_STR>\"							{ debug_print("QT_END"); debug_print_wstate("\"\"", yylval.sval); return QUOTED_STR; }
-<QUOTED_STR>[^"]*						{ debug_print("QT_MID"); yylval.sval = _strdup(yytext); };
+\"										{ debug_print("QT_START"); BEGIN_STATE(ST_QUOT_STR); }
+<ST_QUOT_STR>\"							{ debug_print("QT_END"); debug_print_wstate("\"\"", yylval.sval); return QUOTED_STR; }
+<ST_QUOT_STR>[^"]*						{ debug_print("QT_MID"); yylval.sval = _strdup(yytext); };
 
-\<										{ debug_print("BRKT_START"); BEGIN_STATE(BRKTED_STR); }
-<BRKTED_STR>\>							{ debug_print("BRKT_END"); END_STATE(); debug_print_wstate("<>", yylval.sval); return BRKTED_STR; }
-<BRKTED_STR>[\r\n]						{ debug_print("BRKT_END"); END_STATE(); }
-<BRKTED_STR>[\*\/]						{ debug_print("COMMENT_IN_BRKT"); BEGIN_STATE(BLK_COMMENT); }
-<BRKTED_STR>[^\>^(\r|\n|\r\n)^\*\/]*	{ debug_print("BRKT_MID"); yylval.sval = _strdup(yytext); };
+\<										{ debug_print("BRKT_START"); BEGIN_STATE(ST_BRKT_STR); }
+<ST_BRKT_STR>\>							{ debug_print("BRKT_END"); END_STATE(); debug_print_wstate("<>", yylval.sval); return BRKTED_STR; }
+<ST_BRKT_STR>[\r\n]						{ debug_print("BRKT_END"); END_STATE(); }
+<ST_BRKT_STR>[\*\/]						{ debug_print("COMMENT_IN_BRKT"); BEGIN_STATE(ST_BLK_COMMENT); }
+<ST_BRKT_STR>[^\>^(\r|\n|\r\n)^\*\/]*	{ debug_print("BRKT_MID"); yylval.sval = _strdup(yytext); };
 
 \#include								{ debug_print("INCL_KEYW"); return INCL_KEYW; }
 [a-zA-Z0-9./\\:\-\_]+					{ debug_print("STR"); yylval.sval = _strdup(yytext); return STR; }

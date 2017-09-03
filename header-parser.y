@@ -38,21 +38,19 @@ line: include_dir
 	| useless_strings
 	;
 
-include_dir: INCL_KEYW QUOTED_STR
-	| INCL_KEYW BRKTED_STR
-	| INCL_KEYW QUOTED_STR useless_strings
-	| INCL_KEYW BRKTED_STR useless_strings
+include_dir: INCL_KEYW address
+	| INCL_KEYW address useless_strings
 		{ std::cout << "include_dir" << std::endl; }
+	;
+address: BRKTED_STR
+	| QUOTED_STR
+		{ std::cout << "address " << $1 << std::endl; }
 	;
 useless_strings: useless_strings useless_string
 	| useless_string
 		{ std::cout << "useless_strings" << std::endl; }
 	;
-useless_string: STR
-	| QUOTE
-	| LEFT_BRKT
-	| RIGHT_BRKT
-	| LEFT_BRKT
+useless_string:
 	| error
 		{ std::cout << "useless_string" << std::endl; }
 	;
