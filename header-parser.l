@@ -3,7 +3,7 @@
 #include "header-parser.tab.h"
 #include <iostream>
 
-#define PRINT_DEBUG 1
+#define PRINT_DEBUG 0
 
 void BEGIN_STATE(int state);
 void END_STATE();
@@ -16,7 +16,9 @@ void BEGIN_STATE(int state)
 	old_state = cur_state; 
 	cur_state = (state); 
 	BEGIN(cur_state); 
+#if PRINT_DEBUG
 	std::cout << "state now at " << cur_state << ", while old one is " << old_state << std::endl;
+#endif
 }
 
 void END_STATE() 
@@ -24,13 +26,22 @@ void END_STATE()
 	cur_state = old_state;
 	BEGIN(old_state);
 	old_state = old_state ? 0 : old_state; // system shouldnt go deeper than 2 stack of states
+#if PRINT_DEBUG
 	std::cout << "state now at " << cur_state << std::endl;
+#endif
 }
 
 void debug_print(const char *str)
 {
 #if PRINT_DEBUG
 	std::cout << "\t" << str << std::endl;
+#endif
+}
+
+void debug_print_wstate(const char *state, const char *str)
+{
+#if PRINT_DEBUG
+	std::cout << state << ", " << str << std::endl;
 #endif
 }
 
@@ -52,11 +63,11 @@ void debug_print(const char *str)
 <BLK_COMMENT>[^\*\/]*					;
 
 \"										{ debug_print("QT_START"); BEGIN_STATE(QUOTED_STR); }
-<QUOTED_STR>\"							{ debug_print("QT_END"); END_STATE(); std::cout << "QUOTED_STR " << yylval.sval << std::endl; return QUOTED_STR; }
+<QUOTED_STR>\"							{ debug_print("QT_END"); debug_print_wstate("\"\"", yylval.sval); return QUOTED_STR; }
 <QUOTED_STR>[^"]*						{ debug_print("QT_MID"); yylval.sval = _strdup(yytext); };
 
 \<										{ debug_print("BRKT_START"); BEGIN_STATE(BRKTED_STR); }
-<BRKTED_STR>\>							{ debug_print("BRKT_END"); END_STATE(); std::cout << "BRKTED_STR " << yylval.sval << std::endl; return BRKTED_STR; }
+<BRKTED_STR>\>							{ debug_print("BRKT_END"); END_STATE(); debug_print_wstate("<>", yylval.sval); return BRKTED_STR; }
 <BRKTED_STR>[\r\n]						{ debug_print("BRKT_END"); END_STATE(); }
 <BRKTED_STR>[\*\/]						{ debug_print("COMMENT_IN_BRKT"); BEGIN_STATE(BLK_COMMENT); }
 <BRKTED_STR>[^\>^(\r|\n|\r\n)^\*\/]*	{ debug_print("BRKT_MID"); yylval.sval = _strdup(yytext); };
