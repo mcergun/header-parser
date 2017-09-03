@@ -10,6 +10,8 @@ void yyerror(const char * s);
 
 %}
 
+%error-verbose
+
 %union
 {
 	long long ival;
@@ -17,12 +19,14 @@ void yyerror(const char * s);
 	char * sval;
 }
 
-%token INCL_KEYW DEF_KEYW IFDEF_KEYW QUOTED_STR BRKTED_STR
+%token INCL_KEYW DEF_KEYW IFDEF_KEYW
 %token HASHTAG LEFT_BRKT RIGHT_BRKT QUOTE
 
 %token <ival> INT
 %token <fval> FLOAT
 %token <sval> STR
+%token <sval> QUOTED_STR
+%token <sval> BRKTED_STR
 
 %%
 
@@ -57,6 +61,6 @@ useless_string: STR
 
 void yyerror(const char *s)
 {
-	std::cout << "parse error" << s << std::endl;
+	std::cout << "parse error:\r\n\t" << s << std::endl;
 	return;
 }

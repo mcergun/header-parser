@@ -3,7 +3,7 @@
 #include "header-parser.tab.h"
 #include <iostream>
 
-#define PRINT_DEBUG 0
+#define PRINT_DEBUG 1
 
 void BEGIN_STATE(int state);
 void END_STATE();
@@ -56,7 +56,6 @@ void debug_print_wstate(const char *state, const char *str)
 %%
 [ \t\r\n]								;
 \/\/.*									{ debug_print("LINE_COMMENT"); }	// line comment
-\"\"(.*?|\r|\r\n|\n)\"\"				{ debug_print("QUOTED_STR"); yylval.sval = _strdup(yytext); return QUOTED_STR; }	// block comment
 
 \/\*									{ debug_print("BLK_START"); BEGIN_STATE(BLK_COMMENT); }
 <BLK_COMMENT>\*\/						{ debug_print("BLK_END"); END_STATE(); std::cout << "BLK_COMMENT" << std::endl; }
@@ -74,6 +73,6 @@ void debug_print_wstate(const char *state, const char *str)
 
 \#include								{ debug_print("INCL_KEYW"); return INCL_KEYW; }
 [a-zA-Z0-9./\\:\-\_]+					{ debug_print("STR"); yylval.sval = _strdup(yytext); return STR; }
-.	;
+.										;
 
 %%
