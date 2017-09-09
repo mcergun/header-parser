@@ -8,57 +8,51 @@ int yylex();
 int yyparse();
 void yyerror(const char * s);
 
+extern int line_num;
+
 %}
 
 %error-verbose
 
 %union
 {
-	long long ival;
-	double fval;
-	char * sval;
+        long long ival;
+        double fval;
+        char sval[256];
 }
 
-%token INCL_KEYW DEF_KEYW IFDEF_KEYW
-%token HASHTAG LEFT_BRKT RIGHT_BRKT QUOTE
+%token SYM_QUO SYM_LTN SYM_GTN SYM_PRL SYM_PRR SYM_CRL SYM_CRR
+%token SYM_ADD SYM_MIN SYM_MUL SYM_DIV SYM_ESC
+
+%token KW_INCL KW_DEFN KW_IFDF KW_ELIF KW_ENDF KW_ELSE KW_IFST
 
 %token <ival> INT
 %token <fval> FLOAT
-%token <sval> STR
-%token <sval> QUOTED_STR
-%token <sval> BRKTED_STR
+%token <sval> STR_IDE
+%token <sval> STR_FIL
+%token <sval> STR_LIT
 
 %%
 
 file: line
-	| file line
-	;
+        | file line
+        ;
 
-line: include_dir
-	| useless_strings
-	;
-
-include_dir: INCL_KEYW address
-	| INCL_KEYW address useless_strings
-		{ std::cout << "include_dir" << std::endl; }
-	;
-address: BRKTED_STR
-	| QUOTED_STR
-		{ std::cout << "address " << $1 << std::endl; }
-	;
+line: useless_strings
+        ;
 useless_strings: useless_strings useless_string
-	| useless_string
-		{ std::cout << "useless_strings" << std::endl; }
-	;
+        | useless_string
+                { std::cout << "useless_strings" << std::endl; }
+        ;
 useless_string:
-	| error
-		{ std::cout << "useless_string" << std::endl; }
-	;
+        | error
+                { std::cout << "useless_string" << std::endl; }
+        ;
 
 %%
 
 void yyerror(const char *s)
 {
-	std::cout << "parse error:\r\n\t" << s << std::endl;
-	return;
+        std::cout << "parse error:\r\n\t L" << line_num << " " << s << std::endl;
+        return;
 }

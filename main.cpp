@@ -3,26 +3,22 @@
 
 extern FILE *yyin;
 
-int main(int argc, char **argv)
+int mainn(int argc, char **argv)
 {
-	if (argc != 2)
-	{
-		std::cout << "need at least 1 parameter" << std::endl;
-		return -1;
-	}
+        FILE *input = fopen("c:/Users/mert/Documents/GitHub/header-parser/t.txt", "r");
+        if (input == NULL)
+        {
+                std::cout << "error opening " << argv[1] << std::endl;
+        }
 
-	FILE *input = fopen(argv[1], "r");
-	if (input == NULL)
-	{
-		std::cout << "error opening " << argv[1] << std::endl;
-	}
+        yyin = input;
 
-	yyin = input;
+        do
+        {
+                yyparse();
+        } while (!feof(yyin));
 
-	do
-	{
-		yyparse();
-	} while (!feof(yyin));
+        std::cin.get();
 
-	return 0;
+        return 0;
 }
