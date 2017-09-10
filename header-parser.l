@@ -36,7 +36,7 @@ void BEGIN_STATE(int state)
         cur_state = (state); 
         BEGIN(cur_state); 
         if(DEBUG)
-                std::cout << "state now at " << cur_state << ", while old one is " << old_state << std::endl;
+                std::cout << "STATE(" << cur_state << ", " << old_state << ")";
 }
 
 void END_STATE() 
@@ -45,7 +45,7 @@ void END_STATE()
         BEGIN(old_state);
         old_state = old_state ? 0 : old_state; // system shouldnt go deeper than 2 stack of states
         if(DEBUG)
-                std::cout << "state now at " << cur_state << std::endl;
+                std::cout << "STATE(" << cur_state << ")";
 }
 
 using namespace std;
@@ -70,8 +70,27 @@ using namespace std;
 <ST_QUO_STR>[a-zA-Z0-9_]+                       { RETURN_STR_TOKEN(STR_IDE); }
 <ST_QUO_STR>[a-zA-Z0-9_\/\\\.]+                 { RETURN_STR_TOKEN(STR_FIL); }
 <ST_QUO_STR>[^\"\r\n]*                          { RETURN_STR_TOKEN(STR_LIT); }
-.                                               ;
-
+#include                                        { RETURN_TOKEN(KW_INCL); }
+#define                                         { RETURN_TOKEN(KW_DEFN); }
+#ifdef                                          { RETURN_TOKEN(KW_IFDF); }
+#elif                                           { RETURN_TOKEN(KW_ELIF); }
+#endif                                          { RETURN_TOKEN(KW_ENDF); }
+#else                                           { RETURN_TOKEN(KW_ELSE); }
+#if                                             { RETURN_TOKEN(KW_IFST); }
+\<                                              { RETURN_TOKEN(SYM_LTN); }
+\>                                              { RETURN_TOKEN(SYM_GTN); }
+\(                                              { RETURN_TOKEN(SYM_PRL); }
+\)                                              { RETURN_TOKEN(SYM_PRR); }
+\{                                              { RETURN_TOKEN(SYM_CRL); }
+\}                                              { RETURN_TOKEN(SYM_CRR); }
+\+                                              { RETURN_TOKEN(SYM_ADD); }
+\-                                              { RETURN_TOKEN(SYM_MIN); }
+\*                                              { RETURN_TOKEN(SYM_MUL); }
+\/                                              { RETURN_TOKEN(SYM_DIV); }
+\\                                              { RETURN_TOKEN(SYM_ESC); }
+[a-zA-Z0-9_]+                                   { RETURN_STR_TOKEN(STR_IDE); }
+[a-zA-Z0-9_\/\\\.]+                             { RETURN_STR_TOKEN(STR_FIL); }
+[^\"\r\n\/\*\<\>]*                              { RETURN_STR_TOKEN(STR_LIT); }
 %%
 
 int main()
@@ -80,6 +99,6 @@ int main()
         yyin = input;
 
         yylex();
-
+        fclose(input);
         cin.get();
 }
