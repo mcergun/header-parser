@@ -6,3 +6,5 @@ custom_build_rules/
 *.tab.cpp
 *.tab.h
 *.exe
+FlexLexer.h
+UNISTD_ERROR.readme
