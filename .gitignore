@@ -1,5 +1,8 @@
 Debug/
 .vs/
+data/
+custom_build_rules/
 *.flex.cpp
 *.tab.cpp
 *.tab.h
+*.exe
